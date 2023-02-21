@@ -1,4 +1,4 @@
-CLEAR
-load "fullPath.clp"
-RESET
-RUN
+(CLEAR)
+(load "fullPath.clp")
+(RESET)
+(RUN)
