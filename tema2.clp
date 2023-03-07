@@ -1,77 +1,41 @@
-(deftemplate country
-   (slot name (type SYMBOL))
-   (slot color (type SYMBOL) (default none))
-)
+(deftemplate tara-cu-vecini
+   (slot tara)
+   (multislot vecini))
 
-(deftemplate list-of-countries
-   (multislot countries (type SYMBOL) (default ()))
-)
-
-(deffacts initial-facts
-   (list-of-countries)
-)
-
-(deffunction read-line ()
+(defrule culori 
+   =>
+   (printout t "Culori separate de un spatiu: ")
    (bind ?line (readline))
-   (if (eq ?line FALSE) then (return ""))
-   ?line
+   (bind ?words (explode$ ?line))
+   (foreach ?word ?words
+      (assert (culoare ?word)))
 )
 
-(defrule get-country-input
-   (initial-facts)
-   (list-of-countries (countries $?c&:(eq (length$ ?c) 0)))
+(defrule tari 
    =>
-   (printout t "Enter a list of countries (separated by spaces): ")
-   (bind ?input (read-line))
-   (bind ?country-names (explode$ ?input))
-   (foreach ?name ?country-names
-      (assert (country (name ?name)))
-   )
-   (retract (list-of-countries (countries $?)))
-   (assert (list-of-countries (countries ?country-names)))
+   (printout t "Tari separate de un spatiu ")
+   (bind ?line (readline))
+   (bind ?words (explode$ ?line))
+   (foreach ?word ?words
+      (assert (tara ?word)))
 )
 
-(defrule get-color-input
-   (not (country (color ?)))
-   =>
-   (printout t "Enter a list of colors (separated by spaces): ")
-   (bind ?input (read-line))
-   (bind ?colors (explode$ ?input))
-   (foreach ?color ?colors
-      (assert (country (color ?color)))
-   )
-)
 
-(defrule set-color
-   (country (name ?c:name) (color none))
-   (not (country (name ?n:name) (color ?c:color&~eq ?c:name)))
-   =>
-   (bind ?colors (find-all-facts ((?c country)) (eq ?c:color none)))
-   (bind ?possible-colors (create$))
-   (foreach ?color (find-all-facts ((?c country)) (neq ?c:name) (eq ?c:color ?))
-     (bind ?possible-colors (create$ ?color ?possible-colors))
-   )
-   (if (neq (length$ ?possible-colors) 0) then
-      (bind ?new-color (nth$ (random (length$ ?possible-colors)) ?possible-colors))
-      (modify ?c (color ?new-color))
-   )
-)
-
-(defrule check-conflict
-   ?c1 <- (country (name ?n1) (color ?c1))
-   ?c2 <- (country (name ?n2&~eq ?n1) (color ?c1))
-   =>
-   (printout t "Conflict detected between " ?n1 " and " ?n2 "!" crlf)
-   (retract ?c2)
-   (assert (country (name ?n2) (color none)))
-)
-
-(defrule done
-   (not (country (color none)))
-   =>
-   (printout t "Solution found!" crlf)
-   (foreach ?c (find-all-facts ((?c country)) TRUE)
-      (printout t (str-cat (fact-slot-value ?c name) ": " (fact-slot-value ?c color)) crlf)
-   )
-   (halt)
-)
+; (defrule read-vecini
+;    =>
+;    (printout t "Tara si dupa vecinii ei totul separat de spatii")
+;    (bind ?line (readline))
+;    (bind ?words (explode$ ?line))
+;    (foreach ?word ?words
+;       (bind ?vecini-lista (create$))
+;       (if (eq (word-index ?word) 1)
+;          then (bind ?tara (nth$ 1 ?word))
+;          else (bind ?vecini ?word)
+;               (else (bind ?vecini-lista (create$ ?vecini-lista)))
+;       )
+;       (if (and (eq ?word (length$ ?words)) (neq ?vecini-lista NIL))
+;          then (assert (tara-cu-vecini (tara ?tara)(vecini $? ?vecini-lista)))
+;          else (assert (tara-cu-vecini (tara ?tara)))
+;       )
+;    )
+; )
