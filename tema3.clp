@@ -1,9 +1,9 @@
 (deftemplate student
-    (slot nume)
-    (slot prenume)
-    (slot punctajExamen)
-    (slot punctajProiect)
-    (multislot punctajeLaborator)
+    (slot nume (type SYMBOL))
+    (slot prenume (type SYMBOL))
+    (slot punctajExamen (default 0))
+    (slot punctajProiect(default 0))
+    (multislot punctajeLaborator(default 0))
 )
 
 (deffunction punctulUnu ()
@@ -12,12 +12,38 @@
     (bind ?split (explode$ ?linie))
     (bind ?nume (nth$ 1 ?split))
     (bind ?prenume (nth$ 2 ?split))
-    (bind ?punctajExamen (nth$ 3 ?split))
-    (bind ?punctajProiect (nth$ 4 ?split))
-    ; (bind ?buff (implode$ (subseq$ ?split (nth$ 5 ?split) 10000000)))
-    ; (bind ?punctajeLaborator (explode$ ?buff))
-    (bind ?punctajeLaborator (explode$ (implode$ (subseq$ ?split 5 (length$ ?split)))))
+    (bind ?punctajExamen (if (> (length$ ?split) 2) then (nth$ 3 ?split) else 0))
+    (bind ?punctajProiect (if (> (length$ ?split) 3) then (nth$ 4 ?split) else 0))
+    (bind ?punctajeLaborator (if (> (length$ ?split) 4) then (explode$ (implode$ (subseq$ ?split 5 (length$ ?split)))) else 0))
     (assert (student (nume ?nume)(prenume ?prenume)(punctajExamen ?punctajExamen)(punctajProiect ?punctajProiect)(punctajeLaborator ?punctajeLaborator)))
+)
+
+(deffunction punctulDoi (?numeCautat ?prenumeCautat ?optiune)
+    (bind ?gasit FALSE)
+    (do-for-all-facts ((?s student)) TRUE
+        (if (and (eq (fact-slot-value ?s nume) ?numeCautat)
+                 (eq (fact-slot-value ?s prenume) ?prenumeCautat))
+            then 
+                (printout t "Student gasit --------------------------------------------------------------------------------------" crlf )
+                (bind ?gasit TRUE)
+                (printout t "Introduceti punctajele (separate de spatii): ")
+                (bind ?punctajeNoi (explode$ (readline)))
+                (switch ?optiune
+                    (case 0 then 
+                        (modify ?s (punctajeLaborator ?punctajeNoi))
+                    )
+                    (case 1 then
+                        (bind ?punctajVechi (fact-slot-value ?s punctajeLaborator))
+                        (modify ?s (punctajeLaborator (create$ ?punctajVechi ?punctajeNoi)))
+                    )
+                )
+        )
+    )
+    (if (not ?gasit)
+        then 
+            (printout t "Nu am gasit un student cu numele " ?numeCautat " " ?prenumeCautat)
+    )
+
 )
 
 
@@ -40,7 +66,16 @@
             (punctulUnu)
             (printout t "Done :D" crlf)
          )
-         (case 2 then (printout t "You chose command 2" crlf))
+         (case 2 then 
+            (printout t "Introduceti numele si prenumele studentului. "crlf "De asemenea, introduceti 0 daca doriti sa inlocuiti notele pe care le are deja,"crlf "sau 1 daca doriti sa adaugati note la cele curente.")
+            (bind ?linie (readline))
+            (bind ?split (explode$ ?linie))
+            (bind ?nume (nth$ 1 ?split))
+            (bind ?prenume (nth$ 2 ?split))
+            (bind ?optiune (nth$ 3 ?split))
+            (printout t "apeles punctulDoi cu " ?nume " " ?prenume " " ?optiune)
+            (punctulDoi ?nume ?prenume ?optiune)
+            (printout t "Done :D" crlf))
          (case 3 then (printout t "You chose command 3" crlf))
          (case 4 then (printout t "You chose command 4" crlf))
          (case 5 then (printout t "You chose command 5" crlf))
