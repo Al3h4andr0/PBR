@@ -55,36 +55,4 @@
    )
 )
 
- (defrule assert-colors
-    (declare (salience -10))
-    (colors $? ?colorr $?)
-    (countries $? ?countryy $?)
-    (not (coloring ?countryy ?))
-    (not(and(neighbour ?countryy ?neighbour)(coloring ?neighbour ?colorr)))
-    =>
-    (assert( coloring ?countryy ?colorr))
- )
-
-(defrule check-solution
-    (declare (salience -10))
-    (countries $? ?country $?)
-    (not (coloring ?country ?))
-    =>
-    (assert (solution false))
-)
-
-(defrule solution-true
-    (declare (salience -20))
-    (not (solution false))
-    (coloring ?country ?color)
-    =>
-    (printout t ?country " --> " ?color crlf)
-)
-
-(defrule solution-false
-    (declare (salience -20))
-    (solution false)
-    =>
-    (printout t "Nu exista solutie" crlf)
-)
-
+ 
