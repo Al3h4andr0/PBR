@@ -6,6 +6,21 @@
     (multislot punctajeLaborator)
 )
 
+(deffunction punctulUnu ()
+    (printout t "Introduceti informatiile studentului:" crlf "Nume, Prenume, Punctaj Examen, Punctaj Proiect, Punctaje laborator." crlf "Toate aceste informatii vor fi separate de spatii" crlf)
+    (bind ?linie (readline))
+    (bind ?split (explode$ ?linie))
+    (bind ?nume (nth$ 1 ?split))
+    (bind ?prenume (nth$ 2 ?split))
+    (bind ?punctajExamen (nth$ 3 ?split))
+    (bind ?punctajProiect (nth$ 4 ?split))
+    ; (bind ?buff (implode$ (subseq$ ?split (nth$ 5 ?split) 10000000)))
+    ; (bind ?punctajeLaborator (explode$ ?buff))
+    (bind ?punctajeLaborator (explode$ (implode$ (subseq$ ?split 5 (length$ ?split)))))
+    (assert (student (nume ?nume)(prenume ?prenume)(punctajExamen ?punctajExamen)(punctajProiect ?punctajProiect)(punctajeLaborator ?punctajeLaborator)))
+)
+
+
 (defrule menu-loop
    =>
    (printout t "Introduceti instructiune: " crlf)
@@ -22,16 +37,7 @@
    (while (not (eq ?input 7)) do
       (switch ?input
          (case 1 then 
-            (printout t "Introduceti informatiile studentului:" crlf "Nume, Prenume, Punctaj Examen, Punctaj Proiect, Punctaje laborator." crlf "Toate aceste informatii vor fi separate de spatii" crlf)
-            (bind ?linie (readline))
-            (bind ?split (explode$ ?linie))
-            (bind ?nume (nth$ 1 ?split))
-            (bind ?prenume (nth$ 2 ?split))
-            (bind ?punctajExamen (nth$ 3 ?split))
-            (bind ?punctajProiect (nth$ 4 ?split))
-            (bind ?buff (implode$ (subseq$ ?split (nth$ 5 ?split) 10000000)))
-            (bind ?punctajeLaborator (explode$ ?buff))
-            (assert (student (nume ?nume)(prenume ?prenume)(punctajExamen ?punctajExamen)(punctajProiect ?punctajProiect)(punctajeLaborator ?punctajeLaborator)))
+            (punctulUnu)
             (printout t "Done :D" crlf)
          )
          (case 2 then (printout t "You chose command 2" crlf))
