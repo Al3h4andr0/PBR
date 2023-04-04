@@ -1,0 +1,5 @@
+balanced(tree(4, tree(2, tree(1, nil, nil), tree(3, nil, nil)), tree(6, tree(5, nil, nil), tree(7, nil, nil)))).
+
+search_balanced(tree(4, tree(2, tree(1, nil, nil), tree(3, nil, nil)), tree(6, tree(5, nil, nil), tree(7, nil, nil))), 8, Path).
+
+search_balanced(tree(4, tree(2, tree(1, nil, nil), tree(3, nil, nil)), tree(6, tree(5, nil, nil), tree(7, nil, nil))), 5, Path).
